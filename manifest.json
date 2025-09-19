@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "跳转至crx4chrome",
+  "version": "1.0",
+  "description": "新增右键菜单：将Chrome网上应用店链接转换为crx4chrome链接",
+  "author": "gaojr",
+  "homepage_url": "https://github.com/gaojr/redirect-cws2c4c",
+  "permissions": ["contextMenus"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
