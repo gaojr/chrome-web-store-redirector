@@ -1,0 +1,20 @@
+# Chrome extension private key (非常重要，切勿提交)
+*.pem
+
+# Build / packaged outputs
+*.crx
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editors / IDE
+.vscode/
+.idea/
+*.iml
+
+# Logs / temp
+*.log
+tmp/
+temp/
