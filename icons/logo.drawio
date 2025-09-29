@@ -1,0 +1,19 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.1.2 Chrome/138.0.7204.243 Electron/37.4.0 Safari/537.36" version="28.1.2">
+  <diagram name="128" id="nv_UQ4XfSZU68oomGKjD">
+    <mxGraphModel dx="946" dy="662" grid="1" gridSize="16" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="128" pageHeight="128" background="none" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="9D1msxVgaLxITtOsyMk4-4" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#253945;strokeColor=none;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry width="128" height="128" as="geometry" />
+        </mxCell>
+        <mxCell id="9D1msxVgaLxITtOsyMk4-5" value="&lt;span style=&quot;font-family: &amp;quot;Maple Mono SC NF&amp;quot;; font-weight: 700;&quot;&gt;redir&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#B8CCD5;strokeColor=none;fontSize=40;verticalAlign=middle;align=center;fontColor=#253945;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="14" y="64" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="9D1msxVgaLxITtOsyMk4-6" value="&lt;span style=&quot;font-family: &amp;quot;Maple Mono SC NF&amp;quot;; font-weight: 700;&quot;&gt;CWS&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=40;verticalAlign=middle;align=center;fontColor=#B8CCD5;glass=0;" vertex="1" parent="1">
+          <mxGeometry x="14" y="14" width="100" height="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
