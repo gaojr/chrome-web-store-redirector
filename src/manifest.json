@@ -1,15 +1,16 @@
 {
   "manifest_version": 3,
-  "name": "跳转至crx4chrome",
-  "version": "1.1",
-  "description": "新增右键菜单：将Chrome网上应用店链接转换为crx4chrome链接",
+  "name": "跳转CWS镜像",
+  "version": "2.0",
+  "description": "新增右键菜单：将Chrome网上应用店链重定向至镜像链接",
   "author": "gaojr",
-  "homepage_url": "https://github.com/gaojr/redirect-cws2c4c",
+  "homepage_url": "https://github.com/gaojr/chrome-web-store-redirector",
   "permissions": ["contextMenus"],
   "background": {
     "service_worker": "background.js"
   },
   "icons": {
+    "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   }
