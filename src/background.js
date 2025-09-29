@@ -1,48 +1,65 @@
 /**
- * 从Chrome网上应用店URL中提取扩展ID
+ * 目录常量
  */
-const extractExtensionId = (url) => {
-  url = decodeURIComponent(url) // url转义
-  return url
-    ?.split('/detail/')[1] // 移除detail前的部分
-    ?.split('?')[0] // 移除参数
-    ?.replace(/\/$/, '') // 移除末尾“/”
-    ?.replace(/\/reviews$/, '') // 移除末尾“/reviews”
-    ?.replace(/.*\//, '') // 只保留最后一个“/”后的部分
-    ?.match(/^[a-zA-Z]{32}$/)?.[0] // 校验扩展ID
-}
+const MENUS = {
+  "cws-redirector-crx4chrome": { name: "跳转crx4chrome", url: "https://www.crx4chrome.com/extensions" },
+  "cws-redirecto-crxsosor": { name: "跳转crx搜搜", url: "https://www.crxsoso.com/webstore/detail" },
+  "cws-redirecto-crxdl": { name: "跳转crxdl", url: "https://crxdl.com/detail/g" },
+};
+const CREATE_PROPERTIES = {
+  contexts: ["link"],
+  documentUrlPatterns: ["<all_urls>"],
+  targetUrlPatterns: [
+    // 旧版
+    "*://chrome.google.com/webstore/detail/*",
+    // 新版
+    "*://chromewebstore.google.com/detail/*",
+    // 其他重定向
+    "*://*/*%2Fchrome.google.com%2Fwebstore%2Fdetail%2F*",
+    "*://*/*%2Fchromewebstore.google.com%2Fdetail%2F*",
+  ],
+};
 
-const menuId = 'redirect-to-crx4chrome'
+/**
+ * 从Chrome网上应用店链接中提取信息
+ */
+const extractUrl = (url) => {
+  const cleanUrl = decodeURIComponent(url) // url转义
+    ?.split("/detail")[1] // 移除detail前的部分
+    ?.split("?")[0] // 移除参数
+    ?.replace(/\/$/, "") // 移除末尾“/”
+    ?.replace(/\/reviews$/, ""); // 移除末尾“/reviews”
+  let [extensionName, extensionId] = cleanUrl.split("/");
+  // 校验扩展ID
+  extensionId = extensionId?.match(/^[a-zA-Z]{32}$/)?.[0];
+  return { extensionName, extensionId };
+};
 
 /**
  * 创建右键菜单项
  */
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.contextMenus.create({
-    id: menuId,
-    title: '跳转crx4chrome',
-    contexts: ['link'],
-    documentUrlPatterns: ['<all_urls>'],
-    targetUrlPatterns: [
-      '*://chrome.google.com/webstore/detail/*',
-      '*://chromewebstore.google.com/detail/*',
-      '*://*/*%2Fchrome.google.com%2Fwebstore%2Fdetail%2F*',
-      '*://*/*%2Fchromewebstore.google.com%2Fdetail%2F*',
-    ],
-  })
-})
+  for (const [k, v] of Object.entries(MENUS)) {
+    chrome.contextMenus.create({
+      id: k,
+      title: v.name,
+      ...CREATE_PROPERTIES,
+    });
+  }
+});
 
 /**
  * 处理右键菜单点击事件
  */
 chrome.contextMenus.onClicked.addListener((info, _tab) => {
-  if (info.menuItemId === menuId) {
-    const extensionId = extractExtensionId(info.linkUrl)
+  const menu = MENUS[info.menuItemId];
+  if (menu) {
+    const { extensionId } = extractUrl(info.linkUrl);
     if (extensionId) {
       // 成功提取到扩展ID，进行重定向
-      const redirectUrl = `https://www.crx4chrome.com/extensions/${extensionId}/`
+      const redirectUrl = `${menu.url}/${extensionId}`;
       // 在新标签页中打开
-      chrome.tabs.create({ url: redirectUrl })
+      chrome.tabs.create({ url: redirectUrl });
     }
   }
-})
+});
