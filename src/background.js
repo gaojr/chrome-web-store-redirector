@@ -20,6 +20,97 @@ const CREATE_PROPERTIES = {
 const STORAGE_KEY = "cws-redirector";
 
 /**
+ * 清除并根据给定 menus 重建右键菜单
+ */
+const rebuildContextMenus = (menus = {}, callback) => {
+  chrome.contextMenus.removeAll().then(() => {
+    for (const [k, v] of Object.entries(menus)) {
+      chrome.contextMenus.create({
+        id: `${STORAGE_KEY}-${k}`,
+        title: v.name,
+        ...CREATE_PROPERTIES,
+      });
+    }
+    typeof callback === "function" && callback();
+  });
+};
+
+/**
+ * 从 storage 读取 menus
+ */
+const getStoredMenus = (callback) => {
+  // todo
+  // chrome.storage.local.get(menus, (res) => {
+  //   console.info("🚀 ~ getStoredMenus ~ res:", res);
+  //   callback(res.menus);
+  // });
+};
+
+/**
+ * 将 menus 写入 storage 并重建右键菜单
+ */
+const saveMenus = (menus, callback) => {
+  console.info("🚀 ~ saveMenus ~ menus:", menus);
+  chrome.storage.local.set({ STORAGE_KEY: menus }).then(
+    () => {
+      // todo
+      console.info("🚀 ~ saveMenus ~ :", 'success');
+    },
+    (error) => {
+      // todo
+      console.error("🚀 ~ saveMenus ~ error:", error);
+    },
+  );
+};
+
+const startUp = () => {
+  // todo 生成目录
+  // return () => {
+  //   getStoredMenus((menus) => {
+  //     rebuildContextMenus(menus);
+  //   });
+  // };
+};
+
+/**
+ * service worker 启动（例如浏览器重启时）需要重建右键菜单
+ */
+chrome.runtime.onStartup.addListener(startUp());
+
+/**
+ * 当扩展首次安装或更新时确保 storage 中有菜单并创建
+ */
+chrome.runtime.onInstalled.addListener(() => {
+  console.info("🚀 ~ onInstalled");
+  // todo 如果 storage 为空，写入默认
+  // getStoredMenus((menus) => {
+  //   // 如果 storage 为空，写入默认
+  //   if (!menus || Object.keys(menus).length === 0) {
+  //     saveMenusAndRebuild(DEFAULT_MENUS);
+  //   }
+  // });
+});
+
+/**
+ * 处理 popup 发来的消息：获取/保存 menus
+ */
+chrome.runtime.onMessage.addListener((msg, _sender, response) => {
+  console.info("🚀 ~ onMessage ~ msg:", msg);
+  if (msg?.action === "getMenus") {
+    if (msg?.reset) {
+      // todo 恢复初始化
+      // saveMenusAndRebuild(DEFAULT_MENUS, () => response({ success: true }));
+    }
+    // todo 获取菜单
+    // getStoredMenus((menus) => response({ menus }));
+  } else if (msg?.action === "saveMenus") {
+    // todo 保存菜单
+    // const newMenus = msg.menus || {};
+    // saveMenusAndRebuild(newMenus, () => response({ success: true }));
+  }
+});
+
+/**
  * 从Chrome网上应用店链接中提取信息
  */
 const extractUrl = (url) => {
@@ -33,19 +124,6 @@ const extractUrl = (url) => {
   extensionId = extensionId?.match(/^[a-zA-Z]{32}$/)?.[0];
   return { extensionName, extensionId };
 };
-
-/**
- * 创建右键菜单项
- */
-chrome.runtime.onInstalled.addListener(() => {
-  for (const [k, v] of Object.entries(MENUS)) {
-    chrome.contextMenus.create({
-      id: `${STORAGE_KEY}-${k}`,
-      title: v.name,
-      ...CREATE_PROPERTIES,
-    });
-  }
-});
 
 /**
  * 处理右键菜单点击事件
