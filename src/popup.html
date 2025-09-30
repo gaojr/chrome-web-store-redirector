@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      /* 重置css */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      /* 通用格式 */
+      body {
+        width: 500px;
+        height: auto;
+        padding: 10px;
+      }
+      /* 专用格式 */
+      #msg {
+        font-size: 0.8em;
+      }
+      #rows {
+        max-height: 200px;
+        overflow: auto;
+      }
+      .row {
+        display: flex;
+      }
+      .row input.error-input {
+        border: crimson solid 1px;
+        background-color: SeaShell;
+      }
+      .row input[name="key"] {
+        width: 100px;
+      }
+      .row input[name="showName"] {
+        width: 120px;
+      }
+      .row input[name="url"] {
+        width: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>跳转CWS镜像</h3>
+    <div>
+      <button id="reset">重置为默认</button>
+      <button id="save">保存</button>
+      <span id="msg"></span>
+    </div>
+    <div>
+      <button id="add">新增</button>
+      <div id="rows"></div>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>
