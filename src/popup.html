@@ -14,6 +14,7 @@
         width: 500px;
         height: auto;
         padding: 10px;
+        margin-bottom: 50px;
       }
       /* 专用格式 */
       #msg {
@@ -26,7 +27,7 @@
       .row {
         display: flex;
       }
-      .row input.error-input {
+      .row input:invalid {
         border: crimson solid 1px;
         background-color: SeaShell;
       }
@@ -45,12 +46,12 @@
     <h3>跳转CWS镜像</h3>
     <div>
       <button id="reset">重置为默认</button>
-      <button id="save">保存</button>
+      <button id="save" type="submit" form="rows">保存</button>
       <span id="msg"></span>
     </div>
     <div>
       <button id="add">新增</button>
-      <div id="rows"></div>
+      <form id="rows"></form>
     </div>
     <script src="popup.js"></script>
   </body>
