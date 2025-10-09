@@ -60,4 +60,6 @@ document.getElementById("rows").addEventListener("submit", (event) => {
 });
 
 // 初始化加载
-document.addEventListener("DOMContentLoaded", loadMenus);
+document.addEventListener("DOMContentLoaded", () => {
+  loadMenus();
+});
