@@ -1,7 +1,18 @@
-const showMsg = (text) => {
-  document.getElementById("msg").textContent = text;
+/**
+ * 显示消息
+ */
+const msgEl = document.getElementById("msg");
+const showMsg = (text = "", sec = 3) => {
+  msgEl.textContent = text;
+  setTimeout(() => {
+    msgEl.textContent = "";
+  }, sec * 1000);
 };
 
+/**
+ * 生成菜单
+ */
+const rowsEl = document.getElementById("rows");
 const inputArrts = 'required pattern=".*\\S.*" title="不能为空或纯空格"';
 const createInput = (n, p, v) => {
   return `<input type="text" name="${n}" placeholder="${p}" value="${v}" ${inputArrts} />`;
@@ -18,48 +29,49 @@ const createRow = (key = "", name = "", url = "") => {
   row.querySelector("button").addEventListener("click", () => {
     row.remove();
   });
-  return row;
+  rowsEl.appendChild(row);
 };
-
-const rowsEl = document.getElementById("rows");
 const renderMenus = (menus = {}) => {
   rowsEl.innerHTML = "";
   for (const [k, v] of Object.entries(menus)) {
-    rowsEl.appendChild(createRow(k, v.name, v.url));
+    createRow(k, v.name, v.url);
   }
 };
 
-const loadMenus = async (reset = false) => {
-  const res = await chrome.runtime.sendMessage({ action: "getMenus", reset });
-  showMsg(res?.msg || (reset ? "重置成功" : ""));
+/**
+ * 注册监听器：点击
+ */
+document.getElementById("reset").addEventListener("click", async () => {
+  const res = await chrome.runtime.sendMessage({ action: "resetMenus" });
+  const [msg, sec] = res?.msg ? [res.msg, 0] : ["重置成功"];
+  showMsg(msg, sec);
   renderMenus(res?.data);
-};
+});
+document.getElementById("add").addEventListener("click", () => {
+  createRow();
+});
 
-const saveMenus = async () => {
+/**
+ * 注册监听器：提交
+ */
+document.getElementById("rows").addEventListener("submit", async (event) => {
+  event.preventDefault(); // 阻止表单默认提交事件
+  showMsg("保存中...", 0);
   const menus = {};
   for (const r of rowsEl.children) {
     const inputs = r.getElementsByTagName("input");
     menus[inputs[0].value.trim()] = { name: inputs[1].value.trim(), url: inputs[2].value.trim() };
   }
   const res = await chrome.runtime.sendMessage({ action: "setMenus", menus });
-  showMsg(res?.msg || "保存成功");
-};
-
-// 绑定点击事件
-document.getElementById("reset").addEventListener("click", () => {
-  loadMenus(true);
-});
-document.getElementById("add").addEventListener("click", () => {
-  rowsEl.appendChild(createRow());
+  const [msg, sec] = res?.msg ? [res.msg, 0] : ["保存成功"];
+  showMsg(msg, sec);
 });
 
-// 绑定提交事件
-document.getElementById("rows").addEventListener("submit", (event) => {
-  event.preventDefault(); // 阻止表单默认提交事件
-  saveMenus();
-});
-
-// 初始化加载
-document.addEventListener("DOMContentLoaded", () => {
-  loadMenus();
+/**
+ * 注册监听器：初始化加载
+ */
+document.addEventListener("DOMContentLoaded", async () => {
+  const res = await chrome.runtime.sendMessage({ action: "getMenus" });
+  showMsg(res?.msg || "", 0);
+  renderMenus(res?.data);
 });
