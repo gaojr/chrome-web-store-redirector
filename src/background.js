@@ -1,4 +1,3 @@
-let menus = {};
 const DEFAULT_MENUS = {
   crx4chrome: { name: "跳转crx4chrome", url: "https://www.crx4chrome.com/extensions" },
   crxsosor: { name: "跳转crx搜搜", url: "https://www.crxsoso.com/webstore/detail" },
@@ -19,6 +18,22 @@ const CREATE_PROPERTIES = {
 };
 const STORAGE_KEY = "cws-redirector";
 
+let menus = {};
+
+/**
+ * 重建右键菜单
+ */
+const rebuildContextMenus = () => {
+  chrome.contextMenus.removeAll().then(() => {
+    for (const [k, v] of Object.entries(menus)) {
+      chrome.contextMenus.create({
+        id: `${STORAGE_KEY}-${k}`,
+        title: v.name,
+        ...CREATE_PROPERTIES,
+      });
+    }
+  });
+};
 /**
  * 从Chrome网上应用店链接中提取信息
  */
@@ -35,20 +50,17 @@ const extractUrl = (url) => {
 };
 
 /**
- * 创建右键菜单项
+ * 绑定事件：安装扩展
  */
-chrome.runtime.onInstalled.addListener(() => {
-  for (const [k, v] of Object.entries(MENUS)) {
-    chrome.contextMenus.create({
-      id: `${STORAGE_KEY}-${k}`,
-      title: v.name,
-      ...CREATE_PROPERTIES,
-    });
+chrome.runtime.onInstalled.addListener(({ reason }) => {
+  if (reason === "install") {
+    menus = DEFAULT_MENUS;
+    rebuildContextMenus();
   }
 });
 
 /**
- * 处理右键菜单点击事件
+ * 绑定事件：右键菜单点击
  */
 chrome.contextMenus.onClicked.addListener((info, _tab) => {
   const menu = menus[info.menuItemId];
