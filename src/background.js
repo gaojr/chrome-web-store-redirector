@@ -64,13 +64,19 @@ chrome.runtime.onInstalled.addListener(({ reason }) => {
  */
 chrome.contextMenus.onClicked.addListener((info, _tab) => {
   const menu = menus[info.menuItemId.replace(`${STORAGE_KEY}-`, "")];
-  if (menu) {
-    const { extensionId } = extractUrl(info.linkUrl);
-    if (extensionId) {
-      // 成功提取到扩展ID，进行重定向
-      const redirectUrl = `${menu.url}/${extensionId}`;
-      // 在新标签页中打开
-      chrome.tabs.create({ url: redirectUrl });
-    }
+  const { extensionId } = extractUrl(info.linkUrl);
+  if (extensionId) {
+    // 成功提取到扩展ID，进行重定向
+    const redirectUrl = `${menu.url}/${extensionId}`;
+    // 在新标签页中打开
+    chrome.tabs.create({ url: redirectUrl });
+  } else {
+    // 弹出提示
+    chrome.notifications.create({
+      type: "basic",
+      iconUrl: chrome.runtime.getURL("icons/icon48.png"),
+      title: "跳转CWS镜像",
+      message: "链接无法提取扩展ID",
+    });
   }
 });

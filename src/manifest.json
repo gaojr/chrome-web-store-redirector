@@ -5,7 +5,7 @@
   "description": "新增右键菜单：将Chrome网上应用店链重定向至镜像链接",
   "author": "gaojr",
   "homepage_url": "https://github.com/gaojr/chrome-web-store-redirector",
-  "permissions": ["contextMenus", "storage"],
+  "permissions": ["contextMenus", "notifications", "storage"],
   "background": {
     "service_worker": "background.js"
   },
