@@ -50,7 +50,7 @@ const extractUrl = (url) => {
 };
 
 /**
- * 绑定事件：安装扩展
+ * 注册监听器：安装扩展
  */
 chrome.runtime.onInstalled.addListener(({ reason }) => {
   if (reason === "install") {
@@ -60,7 +60,7 @@ chrome.runtime.onInstalled.addListener(({ reason }) => {
 });
 
 /**
- * 绑定事件：右键菜单点击
+ * 注册监听器：右键菜单点击
  */
 chrome.contextMenus.onClicked.addListener((info, _tab) => {
   const menu = menus[info.menuItemId.replace(`${STORAGE_KEY}-`, "")];
