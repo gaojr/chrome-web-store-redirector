@@ -13,9 +13,9 @@ const showMsg = (text = "", sec = 3) => {
  * 生成菜单
  */
 const rowsEl = document.getElementById("rows");
-const inputArrts = 'required pattern=".*\\S.*" title="不能为空或纯空格"';
+const inputAttrs = 'required pattern=".*\\S.*" title="不能为空或纯空格"';
 const createInput = (n, p, v) => {
-  return `<input type="text" name="${n}" placeholder="${p}" value="${v}" ${inputArrts} />`;
+  return `<input type="text" name="${n}" placeholder="${p}" value="${v}" ${inputAttrs} />`;
 };
 const createRow = (key = "", name = "", url = "") => {
   const row = document.createElement("div");
