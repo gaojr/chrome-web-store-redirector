@@ -63,7 +63,7 @@ chrome.runtime.onInstalled.addListener(({ reason }) => {
  * 绑定事件：右键菜单点击
  */
 chrome.contextMenus.onClicked.addListener((info, _tab) => {
-  const menu = menus[info.menuItemId];
+  const menu = menus[info.menuItemId.replace(`${STORAGE_KEY}-`, "")];
   if (menu) {
     const { extensionId } = extractUrl(info.linkUrl);
     if (extensionId) {
