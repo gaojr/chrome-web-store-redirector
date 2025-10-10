@@ -67,7 +67,7 @@ const saveMenus = async (newMenus = {}) => {
 };
 
 /**
- * 从Chrome网上应用店链接中提取信息
+ * 从链接中提取信息
  */
 const extractUrl = (url) => {
   const cleanUrl = decodeURIComponent(url) // url转义
@@ -81,6 +81,9 @@ const extractUrl = (url) => {
   return { extensionName, extensionId };
 };
 
+/**
+ * 消息监听器
+ */
 const msgListener = async (msg) => {
   let result = {};
   try {
@@ -109,14 +112,14 @@ chrome.runtime.onMessage.addListener((message, _sender, response) => {
 });
 
 /**
- * 注册监听器：扩展启动
+ * 注册监听器：浏览器启动
  */
 chrome.runtime.onStartup.addListener(() => {
   loadMenus();
 });
 
 /**
- * 注册监听器：安装扩展
+ * 注册监听器：扩展安装、更新
  */
 chrome.runtime.onInstalled.addListener(({ reason }) => {
   if (reason === "install") {
