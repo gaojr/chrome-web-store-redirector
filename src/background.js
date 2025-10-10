@@ -23,17 +23,17 @@ let menus = {};
 /**
  * 重建右键菜单
  */
-const rebuildContextMenus = () => {
-  chrome.contextMenus.removeAll().then(() => {
-    for (const [k, v] of Object.entries(menus)) {
-      chrome.contextMenus.create({
-        id: `${STORAGE_KEY}-${k}`,
-        title: v.name,
-        ...CREATE_PROPERTIES,
-      });
-    }
-  });
+const rebuildContextMenus = async () => {
+  await chrome.contextMenus.removeAll();
+  for (const [k, v] of Object.entries(menus)) {
+    chrome.contextMenus.create({
+      id: `${STORAGE_KEY}-${k}`,
+      title: v.name,
+      ...CREATE_PROPERTIES,
+    });
+  }
 };
+
 /**
  * 从Chrome网上应用店链接中提取信息
  */
