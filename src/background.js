@@ -35,6 +35,38 @@ const rebuildContextMenus = async () => {
 };
 
 /**
+ * 读取 storage
+ */
+const getStorage = async () => {
+  let cache = await chrome.storage.local.get(STORAGE_KEY);
+  menus = cache[STORAGE_KEY];
+};
+
+/**
+ * 写入 storage
+ */
+const setStorage = async () => {
+  await chrome.storage.local.set({ [STORAGE_KEY]: menus });
+};
+
+/**
+ * 加载菜单
+ */
+const loadMenus = async () => {
+  await getStorage();
+  rebuildContextMenus();
+};
+
+/**
+ * 保存菜单
+ */
+const saveMenus = async (newMenus = {}) => {
+  menus = newMenus;
+  await setStorage();
+  rebuildContextMenus();
+};
+
+/**
  * 从Chrome网上应用店链接中提取信息
  */
 const extractUrl = (url) => {
@@ -49,14 +81,48 @@ const extractUrl = (url) => {
   return { extensionName, extensionId };
 };
 
+const msgListener = async (msg) => {
+  let result = {};
+  try {
+    if (msg?.action === "loadMenus") {
+      await loadMenus();
+    } else if (msg?.action === "resetMenus") {
+      await saveMenus(DEFAULT_MENUS);
+    } else if (msg?.action === "saveMenus") {
+      await saveMenus(msg.menus);
+    }
+  } catch (error) {
+    result.msg = error;
+  }
+  result.data = menus;
+  return result;
+};
+
+/**
+ * 注册监听器：处理消息
+ */
+chrome.runtime.onMessage.addListener((message, _sender, response) => {
+  msgListener(message).then((result) => {
+    response(result);
+  });
+  return true;
+});
+
+/**
+ * 注册监听器：扩展启动
+ */
+chrome.runtime.onStartup.addListener(() => {
+  loadMenus();
+});
+
 /**
  * 注册监听器：安装扩展
  */
 chrome.runtime.onInstalled.addListener(({ reason }) => {
   if (reason === "install") {
-    menus = DEFAULT_MENUS;
-    rebuildContextMenus();
+    saveMenus(DEFAULT_MENUS);
   }
+  loadMenus();
 });
 
 /**
