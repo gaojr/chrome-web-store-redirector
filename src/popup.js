@@ -13,17 +13,18 @@ const showMsg = (text = "", sec = 3) => {
  * 生成菜单
  */
 const rowsEl = document.getElementById("rows");
-const inputAttrs = 'required pattern=".*\\S.*" title="不能为空或纯空格"';
-const createInput = (n, p, v) => {
-  return `<input type="text" name="${n}" placeholder="${p}" value="${v}" ${inputAttrs} />`;
+const strAttrs = [".*\\S.*", "不能为空"];
+const urlAttrs = [".*\\S.*[^\\/]$", "不能为空，且不能以斜杠结尾"];
+const createInput = (n, p, v = "", a = strAttrs) => {
+  return `<input type="text" name="${n}" placeholder="${p}" value="${v}" required pattern="${a[0]}" title="${a[1]}" />`;
 };
-const createRow = (key = "", name = "", url = "") => {
+const createRow = (key, name, url) => {
   const row = document.createElement("div");
   row.className = "row";
   row.innerHTML = `
     ${createInput("key", "唯一标识", key)}
     ${createInput("showName", "显示名称", name)}
-    ${createInput("url", "URL（不以/结尾）", url)}
+    ${createInput("url", "地址", url, urlAttrs)}
     <button>删除</button>
   `;
   row.querySelector("button").addEventListener("click", () => {
