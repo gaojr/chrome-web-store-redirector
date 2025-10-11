@@ -58,11 +58,20 @@ document.getElementById("add").addEventListener("click", () => {
  */
 document.getElementById("rows").addEventListener("submit", (event) => {
   event.preventDefault(); // 阻止表单默认提交事件
+  // 1. 先 trim 所有输入框
+  rowsEl.querySelectorAll('input[type="text"]').forEach((i) => {
+    i.value = i.value.trim();
+  });
+  // 2. 进行校验
+  if (!rowsEl.reportValidity()) {
+    return;
+  }
+  // 3. 处理数据
   showMsg("保存中...", 0);
   const menus = {};
   for (const r of rowsEl.children) {
     const inputs = r.getElementsByTagName("input");
-    menus[inputs[0].value.trim()] = { name: inputs[1].value.trim(), url: inputs[2].value.trim() };
+    menus[inputs[0].value] = { name: inputs[1].value, url: inputs[2].value };
   }
   chrome.runtime.sendMessage({ action: "saveMenus", menus }).then((res) => {
     const [msg, sec] = res?.msg ? [res.msg, 0] : ["保存成功"];
