@@ -41,11 +41,12 @@ const renderMenus = (menus = {}) => {
 /**
  * 注册监听器：点击
  */
-document.getElementById("reset").addEventListener("click", async () => {
-  const res = await chrome.runtime.sendMessage({ action: "resetMenus" });
-  const [msg, sec] = res?.msg ? [res.msg, 0] : ["重置成功"];
-  showMsg(msg, sec);
-  renderMenus(res?.data);
+document.getElementById("reset").addEventListener("click", () => {
+  chrome.runtime.sendMessage({ action: "resetMenus" }).then((res) => {
+    const [msg, sec] = res?.msg ? [res.msg, 0] : ["重置成功"];
+    showMsg(msg, sec);
+    renderMenus(res?.data);
+  });
 });
 document.getElementById("add").addEventListener("click", () => {
   createRow();
@@ -54,7 +55,7 @@ document.getElementById("add").addEventListener("click", () => {
 /**
  * 注册监听器：提交
  */
-document.getElementById("rows").addEventListener("submit", async (event) => {
+document.getElementById("rows").addEventListener("submit", (event) => {
   event.preventDefault(); // 阻止表单默认提交事件
   showMsg("保存中...", 0);
   const menus = {};
@@ -62,16 +63,18 @@ document.getElementById("rows").addEventListener("submit", async (event) => {
     const inputs = r.getElementsByTagName("input");
     menus[inputs[0].value.trim()] = { name: inputs[1].value.trim(), url: inputs[2].value.trim() };
   }
-  const res = await chrome.runtime.sendMessage({ action: "saveMenus", menus });
-  const [msg, sec] = res?.msg ? [res.msg, 0] : ["保存成功"];
-  showMsg(msg, sec);
+  chrome.runtime.sendMessage({ action: "saveMenus", menus }).then((res) => {
+    const [msg, sec] = res?.msg ? [res.msg, 0] : ["保存成功"];
+    showMsg(msg, sec);
+  });
 });
 
 /**
  * 注册监听器：初始化加载
  */
-document.addEventListener("DOMContentLoaded", async () => {
-  const res = await chrome.runtime.sendMessage({ action: "loadMenus" });
-  showMsg(res?.msg || "", 0);
-  renderMenus(res?.data);
+document.addEventListener("DOMContentLoaded", () => {
+  chrome.runtime.sendMessage({ action: "loadMenus" }).then((res) => {
+    showMsg(res?.msg || "", 0);
+    renderMenus(res?.data);
+  });
 });
