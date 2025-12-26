@@ -71,7 +71,7 @@ const saveMenus = async (newMenus = {}) => {
  */
 const extractUrl = (url) => {
   const cleanUrl = decodeURIComponent(url) // url转义
-    ?.split("/detail")[1] // 移除detail前的部分
+    ?.split("detail/")[1] // 移除detail前的部分
     ?.split("?")[0] // 移除参数
     ?.replace(/\/$/, "") // 移除末尾“/”
     ?.replace(/\/reviews$/, ""); // 移除末尾“/reviews”
