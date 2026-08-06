@@ -9,3 +9,9 @@ New right-click menu: Redirect Chrome Web Store link to image link
 - [crx4chrome](https://www.crx4chrome.com/)
 - [crxsoso](https://www.crxsoso.com/)
 - [crxdl](https://crxdl.com/)
+
+## Extension Packaging
+
+- Open `chrome://extensions/`, click "Pack extension"
+- Select `src` as root, click "Pack Extension"
+- Get `src.crx` in `src`
