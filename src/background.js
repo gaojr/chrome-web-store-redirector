@@ -75,10 +75,10 @@ const extractUrl = (url) => {
     ?.split("?")[0] // 移除参数
     ?.replace(/\/$/, "") // 移除末尾“/”
     ?.replace(/\/reviews$/, ""); // 移除末尾“/reviews”
-  let [extensionName, extensionId] = cleanUrl?.split("/") || [];
+  let extensionId = cleanUrl?.split("/").filter(Boolean).pop();
   // 校验扩展ID
   extensionId = extensionId?.match(/^[a-zA-Z]{32}$/)?.[0];
-  return { extensionName, extensionId };
+  return { extensionId };
 };
 
 /**

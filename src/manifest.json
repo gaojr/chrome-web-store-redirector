@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "跳转CWS镜像",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "新增右键菜单：将Chrome网上应用店链重定向至镜像链接",
   "author": "gaojr",
   "homepage_url": "https://github.com/gaojr/chrome-web-store-redirector",
