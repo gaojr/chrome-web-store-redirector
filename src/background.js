@@ -18,12 +18,10 @@ const CREATE_PROPERTIES = {
 };
 const STORAGE_KEY = "cws-redirector";
 
-let menus = {};
-
 /**
  * 重建右键菜单
  */
-const rebuildContextMenus = async () => {
+const rebuildContextMenus = async (menus) => {
   await chrome.contextMenus.removeAll();
   for (const [k, v] of Object.entries(menus)) {
     chrome.contextMenus.create({
@@ -38,47 +36,30 @@ const rebuildContextMenus = async () => {
  * 读取 storage
  */
 const getStorage = async () => {
-  let cache = await chrome.storage.local.get(STORAGE_KEY);
-  menus = cache[STORAGE_KEY];
+  const cache = await chrome.storage.local.get(STORAGE_KEY);
+  return cache[STORAGE_KEY] ?? DEFAULT_MENUS;
 };
 
 /**
  * 写入 storage
  */
-const setStorage = async () => {
+const setStorage = async (menus) => {
   await chrome.storage.local.set({ [STORAGE_KEY]: menus });
 };
 
 /**
- * 加载菜单
+ * 读取并加载菜单
  */
 const loadMenus = async () => {
-  await getStorage();
-  rebuildContextMenus();
+  rebuildContextMenus(await getStorage());
 };
 
 /**
- * 保存菜单
+ * 保存&重建菜单
  */
-const saveMenus = async (newMenus = {}) => {
-  menus = newMenus;
-  await setStorage();
-  rebuildContextMenus();
-};
-
-/**
- * 从链接中提取信息
- */
-const extractUrl = (url) => {
-  const cleanUrl = decodeURIComponent(url) // url转义
-    ?.split("detail/")[1] // 移除detail前的部分
-    ?.split("?")[0] // 移除参数
-    ?.replace(/\/$/, "") // 移除末尾“/”
-    ?.replace(/\/reviews$/, ""); // 移除末尾“/reviews”
-  let extensionId = cleanUrl?.split("/").filter(Boolean).pop();
-  // 校验扩展ID
-  extensionId = extensionId?.match(/^[a-zA-Z]{32}$/)?.[0];
-  return { extensionId };
+const saveAndRebuildMenus = async (menus = {}) => {
+  await setStorage(menus);
+  rebuildContextMenus(menus);
 };
 
 /**
@@ -90,14 +71,14 @@ const msgListener = async (msg) => {
     if (msg?.action === "loadMenus") {
       await loadMenus();
     } else if (msg?.action === "resetMenus") {
-      await saveMenus(DEFAULT_MENUS);
+      await saveAndRebuildMenus(DEFAULT_MENUS);
     } else if (msg?.action === "saveMenus") {
-      await saveMenus(msg.menus);
+      await saveAndRebuildMenus(msg.menus);
     }
   } catch (error) {
     result.msg = error;
   }
-  result.data = menus;
+  result.data = await getStorage();
   return result;
 };
 
@@ -123,18 +104,35 @@ chrome.runtime.onStartup.addListener(() => {
  */
 chrome.runtime.onInstalled.addListener(({ reason }) => {
   if (reason === "install") {
-    saveMenus(DEFAULT_MENUS);
+    saveAndRebuildMenus(DEFAULT_MENUS);
+  } else {
+    loadMenus();
   }
-  loadMenus();
 });
+
+/**
+ * 从链接中提取信息
+ */
+const extractUrl = (url) => {
+  const cleanUrl = decodeURIComponent(url) // url转义
+    ?.split("detail/")[1] // 移除detail前的部分
+    ?.split("?")[0] // 移除参数
+    ?.replace(/\/$/, "") // 移除末尾“/”
+    ?.replace(/\/reviews$/, ""); // 移除末尾“/reviews”
+  let extensionId = cleanUrl?.split("/").filter(Boolean).pop();
+  // 校验扩展ID
+  extensionId = extensionId?.match(/^[a-zA-Z]{32}$/)?.[0];
+  return { extensionId };
+};
 
 /**
  * 注册监听器：右键菜单点击
  */
-chrome.contextMenus.onClicked.addListener((info, _tab) => {
-  const menu = menus[info.menuItemId.replace(`${STORAGE_KEY}-`, "")];
+chrome.contextMenus.onClicked.addListener(async (info, _tab) => {
   const { extensionId } = extractUrl(info.linkUrl);
   if (extensionId) {
+    const menus = await getStorage();
+    const menu = menus[info.menuItemId.replace(`${STORAGE_KEY}-`, "")];
     // 成功提取到扩展ID，进行重定向
     const redirectUrl = `${menu.url}/${extensionId}`;
     // 在新标签页中打开
