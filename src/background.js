@@ -1,7 +1,7 @@
 const DEFAULT_MENUS = {
-  crx4chrome: { name: "跳转crx4chrome", url: "https://www.crx4chrome.com/extensions" },
-  crxsosor: { name: "跳转crx搜搜", url: "https://www.crxsoso.com/webstore/detail" },
-  crxdl: { name: "跳转crxdl", url: "https://crxdl.com/detail/g" },
+  crx4chrome: "https://www.crx4chrome.com/extensions",
+  crxsoso: "https://www.crxsoso.com/webstore/detail",
+  crxdl: "https://crxdl.com/detail/g",
 };
 const CREATE_PROPERTIES = {
   contexts: ["link"],
@@ -25,8 +25,8 @@ const rebuildContextMenus = async (menus) => {
   await chrome.contextMenus.removeAll();
   for (const [k, v] of Object.entries(menus)) {
     chrome.contextMenus.create({
-      id: `${STORAGE_KEY}-${k}`,
-      title: v.name,
+      id: k,
+      title: `跳转${k}`,
       ...CREATE_PROPERTIES,
     });
   }
@@ -132,9 +132,9 @@ chrome.contextMenus.onClicked.addListener(async (info, _tab) => {
   const { extensionId } = extractUrl(info.linkUrl);
   if (extensionId) {
     const menus = await getStorage();
-    const menu = menus[info.menuItemId.replace(`${STORAGE_KEY}-`, "")];
+    const menuUrl = menus[info.menuItemId];
     // 成功提取到扩展ID，进行重定向
-    const redirectUrl = `${menu.url}/${extensionId}`;
+    const redirectUrl = `${menuUrl}/${extensionId}`;
     // 在新标签页中打开
     chrome.tabs.create({ url: redirectUrl });
   } else {

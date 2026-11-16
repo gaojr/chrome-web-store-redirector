@@ -18,12 +18,11 @@ const urlAttrs = [".*\\S.*[^\\/]$", "不能为空，且不能以斜杠结尾"];
 const createInput = (n, p, v = "", a = strAttrs) => {
   return `<input type="text" name="${n}" placeholder="${p}" value="${v}" required pattern="${a[0]}" title="${a[1]}" />`;
 };
-const createRow = (key, name, url) => {
+const createRow = (key, url) => {
   const row = document.createElement("div");
   row.className = "row";
   row.innerHTML = `
     ${createInput("key", "唯一标识", key)}
-    ${createInput("showName", "显示名称", name)}
     ${createInput("url", "地址", url, urlAttrs)}
     <button>删除</button>
   `;
@@ -35,7 +34,7 @@ const createRow = (key, name, url) => {
 const renderMenus = (menus = {}) => {
   rowsEl.innerHTML = "";
   for (const [k, v] of Object.entries(menus)) {
-    createRow(k, v.name, v.url);
+    createRow(k, v);
   }
 };
 
@@ -71,7 +70,7 @@ document.getElementById("rows").addEventListener("submit", (event) => {
   const menus = {};
   for (const r of rowsEl.children) {
     const inputs = r.getElementsByTagName("input");
-    menus[inputs[0].value] = { name: inputs[1].value, url: inputs[2].value };
+    menus[inputs[0].value] = inputs[1].value;
   }
   chrome.runtime.sendMessage({ action: "saveMenus", menus }).then((res) => {
     const [msg, sec] = res?.msg ? [res.msg, 0] : ["保存成功"];
